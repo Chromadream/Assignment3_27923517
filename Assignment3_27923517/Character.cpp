@@ -10,7 +10,7 @@ Character::Character()
 
 Character::Character(std::string Name)
 {
-	*name = Name;
+	name = &Name;
 	currHealth = NULL;
 	attackPoint = NULL;
 	defensePoint = NULL;
@@ -18,14 +18,15 @@ Character::Character(std::string Name)
 
 Character::Character(std::string Name, int initialHealth, int initialAtk, int initialDef)
 {
-	*name = Name;
-	*currHealth = initialHealth;
-	*attackPoint = initialAtk;
-	*defensePoint = initialDef;
+	name = new std::string(Name);
+	currHealth = new int(initialHealth);
+	attackPoint = new int(initialAtk);
+	defensePoint = new int(initialDef);
 }
 
 Character::~Character()
 {
+	delete name;
 	delete currHealth;
 	delete attackPoint;
 	delete defensePoint;
@@ -53,7 +54,10 @@ void Character::addHealth(int addition)
 bool Character::decHealth(int subtraction)
 {
 	bool dead = false;
-	*currHealth -= subtraction;
+	if (subtraction > 0)
+	{
+		*currHealth -= subtraction;
+	}
 	if (this->getHealth() <= 0)
 	{
 		dead = true;
@@ -91,8 +95,8 @@ void Character::addDef(int addition)
 
 std::ostream & operator<<(std::ostream & os, const Character & chara)
 {
-	int charaHealth = (*chara.currHealth) / 100;
-	int healthRem = 10 - charaHealth;
+	double charaHealth = ceil((double)(*chara.currHealth)/10);
+	double healthRem = 10 - charaHealth;
 	os << *chara.name << std::endl;
 	os << std::string(12, '-') << std::endl;
 	os << "|" << std::string(charaHealth, '*')<<std::string(healthRem,' ')<<"|" << std::endl;

@@ -14,10 +14,10 @@ public:
 	void GameStart();
 private:
 	std::vector<Character*> InvolvedCharacters;
-	int* HeroIndex;
-	int* currentEnemyIndex;
-	int* defeatedEnemyCounter;
-	Hero customizeHero();
+	int HeroIndex;
+	int currentEnemyIndex;
+	int defeatedEnemyCounter;
+	Hero* customizeHero();
 	bool heroTurn();
 	bool bossTurn();
 	bool regularEnemyTurn();

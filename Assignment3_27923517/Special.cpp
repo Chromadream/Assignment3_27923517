@@ -8,11 +8,13 @@ Special::Special(): Character()
 Special::Special(std::string Name): Character(Name)
 {
 	specialAtk = NULL;
+	specialAtkStatus = new bool(true);
 }
 
 Special::Special(std::string Name, int initialHealth, int initialAtk, int initialDef, int SpecialAtk) :
 	Character(Name, initialHealth, initialAtk, initialDef) {
-	*specialAtk = SpecialAtk;
+	specialAtk = new int(SpecialAtk);
+	specialAtkStatus = new bool(true);
 }
 
 Special::~Special()

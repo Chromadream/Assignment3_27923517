@@ -14,7 +14,7 @@ void Logic::GameSetup()
 	std::cin >> input;
 	if (input == 'Y' || input == 'y')
 	{
-		Hero* hero = &customizeHero();
+		Hero* hero = customizeHero();
 		InvolvedCharacters.push_back(hero);
 	}
 	else
@@ -30,43 +30,45 @@ void Logic::GameSetup()
 	InvolvedCharacters.push_back(new Character("Onmoraki", 30, 5, 4));
 	InvolvedCharacters.push_back(new Character("Fenrir", 40, 6, 7));
 	InvolvedCharacters.push_back(new Special("Take-Mikazuchi", 50, 8, 8, 6));
-	*HeroIndex = 0;
-	*currentEnemyIndex = 1;
-	*defeatedEnemyCounter = 0;
+	HeroIndex = 0;
+	currentEnemyIndex = 1;
+	defeatedEnemyCounter = 0;
 }
 
 void Logic::GameStart()
 {
 	bool winStatus, died = false, diedEnemy;
-	while (*defeatedEnemyCounter < 5 || !died)
+	std::cout << "Your first enemy appears. " << InvolvedCharacters[currentEnemyIndex]->getName() << std::endl;
+	while (defeatedEnemyCounter < 5 || died == false)
 	{
 		diedEnemy = heroTurn();
-		if (diedEnemy&&*defeatedEnemyCounter!=5)
+		if (diedEnemy&&defeatedEnemyCounter!=5)
 		{
 			nextEnemy();
 		}
-		else if (diedEnemy&&*defeatedEnemyCounter == 5)
+		else if (diedEnemy&&defeatedEnemyCounter == 5)
 		{
 			winStatus = true;
 			endGame(winStatus);
 		}
-		if (*defeatedEnemyCounter == 4)
-		{
-			died = bossTurn();
-		}
-		else
-		{
-			died = regularEnemyTurn();
-		}
+        if (defeatedEnemyCounter == 4)
+        {
+            died = bossTurn();
+        }
+        else
+        {
+            died = regularEnemyTurn();
+        }
 		if (died)
 		{
 			winStatus = false;
 			endGame(winStatus);
+			break;
 		}
 	}
 }
 
-Hero Logic::customizeHero()
+Hero* Logic::customizeHero()
 {
 	std::string name;
 	int initCharPoints = 8;
@@ -83,31 +85,31 @@ Hero Logic::customizeHero()
 	defense = IntegerCheck(initCharPoints, 0);
 	std::cout << "Generating random special attack points."<<std::endl;
 	specialatk = randGen(0, 10);
-	return Hero(name, health, attack, defense, specialatk);
+	return new Hero(name, health, attack, defense, specialatk);
 }
 
 bool Logic::heroTurn()
 {
 	char specialAtk;
 	bool win = false;
-	Hero* temp = static_cast<Hero*>(InvolvedCharacters[*HeroIndex]);
-	std::cout << temp << std::endl;
+	Hero* temp = static_cast<Hero*>(InvolvedCharacters[HeroIndex]);
+	std::cout << *temp << std::endl;
 	if (temp->getSPAStatus())
 	{
 		std::cout << "Do you want to use the special attack? (Y/N) ";
 		std::cin >> specialAtk;
 		if (specialAtk == 'y' || specialAtk == 'Y')
 		{
-			win = SpecialAtk(temp, InvolvedCharacters[*currentEnemyIndex]);
+			win = SpecialAtk(temp, InvolvedCharacters[currentEnemyIndex]);
 		}
 		else
 		{
-			win = attack(temp, InvolvedCharacters[*currentEnemyIndex]);
+			win = attack(temp, InvolvedCharacters[currentEnemyIndex]);
 		}
 	}
 	else
 	{
-		win = attack(temp, InvolvedCharacters[*currentEnemyIndex]);
+		win = attack(temp, InvolvedCharacters[currentEnemyIndex]);
 	}
 	return win;
 }
@@ -115,15 +117,15 @@ bool Logic::heroTurn()
 bool Logic::bossTurn()
 {
 	bool win = false;
-	Special* temp = static_cast<Special*>(InvolvedCharacters[*currentEnemyIndex]);
-	std::cout << temp << std::endl;
+	Special* temp = static_cast<Special*>(InvolvedCharacters[currentEnemyIndex]);
+	std::cout << *temp << std::endl;
 	if (randGen(0, 10) > 5 && temp->getSPAStatus())
 	{
-		win = SpecialAtk(temp, InvolvedCharacters[*HeroIndex]);
+		win = SpecialAtk(temp, InvolvedCharacters[HeroIndex]);
 	}
 	else
 	{
-		win = attack(temp, InvolvedCharacters[*HeroIndex]);
+		win = attack(temp, InvolvedCharacters[HeroIndex]);
 	}
 	return win;
 }
@@ -131,8 +133,8 @@ bool Logic::bossTurn()
 bool Logic::regularEnemyTurn()
 {
 	bool win = false;
-	std::cout << *InvolvedCharacters[*currentEnemyIndex] << std::endl;
-	win = attack(InvolvedCharacters[*currentEnemyIndex], InvolvedCharacters[*HeroIndex]);
+	std::cout << *InvolvedCharacters[currentEnemyIndex] << std::endl;
+	win = attack(InvolvedCharacters[currentEnemyIndex], InvolvedCharacters[HeroIndex]);
 	return win;
 }
 
@@ -144,8 +146,12 @@ bool Logic::attack(Character * attacker, Character * defender)
 	{
 
 		dead = defender->decHealth(dmg);
-		std::cout << "Dealt " << dmg << " damages." << std::endl;
 	}
+	else
+	{
+		dmg = 0;
+	}
+	std::cout << attacker->getName() << " dealt " << dmg << " damages." << std::endl;
 	return dead;
 }
 
@@ -159,8 +165,12 @@ bool Logic::SpecialAtk(Special * attacker, Character * defender)
 	{
 
 		dead = defender->decHealth(dmg);
-		std::cout << attacker->getName() <<" dealt " << dmg << " damages." << std::endl;
 	}
+	else
+	{
+		dmg = 0;
+	}
+	std::cout << attacker->getName() << " dealt " << dmg << " damages." << std::endl;
 	return dead;
 }
 
@@ -171,18 +181,24 @@ int Logic::randGen(int lowerlimit, int upperlimit)
 
 void Logic::endBattle()
 {
-	Hero* temp = static_cast<Hero*>(InvolvedCharacters[*HeroIndex]);
+	Hero* temp = static_cast<Hero*>(InvolvedCharacters[HeroIndex]);
 	temp->addPrizeMoney(temp->getHealth());
 	temp->addHealth(20);
 	temp->addAtk(randGen(0, 2));
 	temp->addDef(randGen(0, 2));
 	temp->addSPAtk(randGen(0, 2));
+	temp->resetSPAStatus();
 }
 
 void Logic::nextEnemy(void)
 {
+	endBattle();
+	std::cout << "Defeated " << InvolvedCharacters[currentEnemyIndex]->getName() << std::endl;
 	InvolvedCharacters.erase(InvolvedCharacters.begin()+1);
-	(*defeatedEnemyCounter)++;
+	(defeatedEnemyCounter)++;
+	system("pause");
+	system("cls");
+	std::cout << "A new enemy appears! " << InvolvedCharacters[currentEnemyIndex]->getName() << std::endl;
 }
 
 void Logic::endGame(bool winStatus)
@@ -195,8 +211,8 @@ void Logic::endGame(bool winStatus)
 	{
 		std::cout << "You died." << std::endl;
 	}
-	std::cout << "Destroyed " << *defeatedEnemyCounter << " enemies." << std::endl;
-	std::cout << "Obtained " << static_cast<Hero*>(InvolvedCharacters[*HeroIndex])->returnPrizeMoney() << " golds." << std::endl;
+	std::cout << "Destroyed " << defeatedEnemyCounter << " enemies." << std::endl;
+	std::cout << "Obtained " << static_cast<Hero*>(InvolvedCharacters[HeroIndex])->returnPrizeMoney() << " golds." << std::endl;
 	std::cout << "Thank you for playing!" << std::endl;
 }
 
