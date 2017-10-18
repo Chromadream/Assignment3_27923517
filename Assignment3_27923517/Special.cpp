@@ -1,5 +1,10 @@
 #include "Special.h"
 
+Special::Special(): Character()
+{
+	specialAtk = NULL;
+}
+
 Special::Special(std::string Name): Character(Name)
 {
 	specialAtk = NULL;
@@ -24,7 +29,22 @@ void Special::addSPAtk(int addition)
 	}
 }
 
+void Special::resetSPAStatus()
+{
+	*specialAtkStatus = true;
+}
+
+bool Special::getSPAStatus()
+{
+	return *specialAtkStatus;
+}
+
 int Special::getSPAtk()
 {
 	return *specialAtk;
+}
+
+void Special::useSPAtk()
+{
+	*specialAtkStatus = false;
 }

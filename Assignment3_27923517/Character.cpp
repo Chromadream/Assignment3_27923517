@@ -1,5 +1,13 @@
 #include "Character.h"
 
+Character::Character()
+{
+	name = NULL;
+	currHealth = NULL;
+	attackPoint = NULL;
+	defensePoint = NULL;
+}
+
 Character::Character(std::string Name)
 {
 	*name = Name;
@@ -23,18 +31,34 @@ Character::~Character()
 	delete defensePoint;
 }
 
+std::string Character::getName()
+{
+	return *name;
+}
+
 int Character::getHealth()
 {
 	return *currHealth;
 }
 
-void Character::setHealth(int newHealth)
+void Character::addHealth(int addition)
 {
-	*currHealth = newHealth;
+	*currHealth += addition;
 	if (this->getHealth() > 100)
 	{
 		*currHealth = 100;
 	}
+}
+
+bool Character::decHealth(int subtraction)
+{
+	bool dead = false;
+	*currHealth -= subtraction;
+	if (this->getHealth() <= 0)
+	{
+		dead = true;
+	}
+	return dead;
 }
 
 int Character::getAtk()
@@ -65,3 +89,13 @@ void Character::addDef(int addition)
 	}
 }
 
+std::ostream & operator<<(std::ostream & os, const Character & chara)
+{
+	int charaHealth = (*chara.currHealth) / 100;
+	int healthRem = 10 - charaHealth;
+	os << *chara.name << std::endl;
+	os << std::string(12, '-') << std::endl;
+	os << "|" << std::string(charaHealth, '*')<<std::string(healthRem,' ')<<"|" << std::endl;
+	os << std::string(12, '-') << std::endl;
+	return os;
+}
