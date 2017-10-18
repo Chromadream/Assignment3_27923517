@@ -2,15 +2,20 @@
 #define CHAR_H
 #include <iostream>
 #include <string>
+
+/*
+ * Character.h
+ * Header file for the Character class
+ * Serves as the class used by regular enemies, and base for Special class
+ */
+
 class Character {
 public:
 	Character();
-	Character(std::string Name);
 	Character(std::string Name, int initialHealth, int initialAtk, int initialDef);
 	virtual ~Character();
 	std::string getName();
 	int getHealth();
-	void addHealth(int addition);
 	bool decHealth(int subtraction);
 	int getAtk();
 	void addAtk(int addition);

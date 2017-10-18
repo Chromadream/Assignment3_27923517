@@ -1,12 +1,17 @@
 #ifndef SPC_H
 #define SPC_H
 #include "Character.h"
+
+/*
+ * Special.h
+ * Header file for the Special class
+ * Inherited from Character class
+ * Serves as base class for Hero class
+ */
 class Special : public Character {
 public:
-	Special();
-	Special(std::string Name);
 	Special(std::string Name, int initialHealth, int initialAtk, int initialDef, int SpecialAtk);
-	~Special();
+	virtual ~Special();
 	void addSPAtk(int addition);
 	void resetSPAStatus();
 	bool getSPAStatus();

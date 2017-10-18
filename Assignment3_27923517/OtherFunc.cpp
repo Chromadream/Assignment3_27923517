@@ -36,3 +36,12 @@ int IntegerCheck(int upperLimit, int lowerLimit)
 	return value;
 }
 
+/*
+ * randGen(int lowerlimit, int upperlimit)
+ * A wrapper function to the rand(), but limited to the range of lowerlimit to upperimit
+ */
+int randGen(int lowerlimit, int upperlimit)
+{
+	return rand() % upperlimit + lowerlimit;
+}
+
